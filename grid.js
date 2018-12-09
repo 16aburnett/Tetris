@@ -12,7 +12,7 @@ function Grid(rows, cols, cwidth) {
     this.strokeColor = "#003fcd";
     this.color = "#87ceeb";
     this.cells = [];
-    this.shapes = [];
+    this.blocks = [];
     this.currentShape;
     this.nextShape;
 
@@ -30,6 +30,71 @@ function Grid(rows, cols, cwidth) {
     // UPDATE/MOVE BLOCK 
     // ==================================================================================================
 
+    this.removeRow = function(rowFilled){
+
+        // change that row to zeros 
+        for(var j = 0; j < this.cols; j++){
+
+            this.cells[rowFilled][j] = 0;
+            
+            // delete all blocks 
+            for(var k = 0; k < this.blocks.length; k++){
+
+                if(this.blocks[k].i == rowFilled && this.blocks[k].j == j){
+
+                    // remove kth block from array
+                    this.blocks.splice(k,1);
+
+                }
+
+            }
+
+
+        }
+
+        // shift everything above, down 
+
+        // for every col
+        for (var j = 0; j < this.cols; j++){
+
+            // everything up until rowFilled
+            var column = [];
+
+            // for every elem in the col above shift level
+            // done from bottom up to ensure no bugs 
+            for(var i = 0; i < rowFilled; i++){
+
+                column.push(this.cells[i][j]);
+
+            }
+
+            column.unshift(0);
+
+            for(var i = 0; i <= rowFilled; i++){
+
+                this.cells[i][j] = column[i];
+
+            }
+
+        
+
+        }
+
+        // shift
+        for(var k = 0; k < this.blocks.length; k++){
+
+            // if block is above removed row 
+            if(this.blocks[k].i < rowFilled) { 
+
+                // move block down
+                this.blocks[k].i++;
+
+            }
+
+        }
+
+    }
+
     // the constant falling of the current falling block 
     // returns true if successful, false otherwise 
     this.update = function () {
@@ -39,9 +104,21 @@ function Grid(rows, cols, cwidth) {
         // attempt to move down, if cant 
         if (!this.moveDown()){
 
-            // create new shape
-            check = this.createShape();
+            // check whether there is a filled row or not
+            var rowFilled = this.filledRow();
 
+            // if a row is filled 
+            if(rowFilled != -1){
+
+                this.removeRow(rowFilled);
+
+            } 
+
+            // else if a row is not filled
+            else { 
+                // create new shape
+                check = this.createShape();
+            }
         }
 
         if(!check) {
@@ -165,6 +242,39 @@ function Grid(rows, cols, cwidth) {
 
     }
 
+    // returns the i of the filled row or -1 if none
+    this.filledRow = function(){
+
+        for(var i = 0; i < this.rows; i++){
+
+            var isRowFilled = true;
+
+            for(var j = 0; j < this.cols; j++){
+
+                // if there is an empty space, then the current row is not filled
+                if(this.cells[i][j] == 0){
+
+                    isRowFilled = false;
+                    break;
+
+                }
+
+
+            }
+
+            console.log(isRowFilled);
+            if(isRowFilled){
+
+                return i;
+
+            }
+
+        }
+
+        return -1;
+
+    }
+
     // INSERTING BLOCK 
     // ==================================================================================================
 
@@ -176,7 +286,14 @@ function Grid(rows, cols, cwidth) {
         var options = [ONE, FOURXONE, TWOXTWO, TWOZ, _TWOZ, HOOK_L, HOOK, TEE, U];
 
         this.currentShape = new shape(options[floor(random(options.length))]);
-        this.shapes.push(this.currentShape);
+
+        // for each block in the shape
+        for(var k = 0; k < this.currentShape.blocks.length; k++){
+
+            this.blocks.push(this.currentShape.blocks[k]);
+            console.log(this.currentShape.blocks[k]);
+
+        }
         var check = this.addShape();
         
         if (!check){
@@ -238,7 +355,7 @@ function Grid(rows, cols, cwidth) {
             str += "\n";
 
         }
-
+        console.clear();
         console.log(str);
     }
 
@@ -251,24 +368,20 @@ function Grid(rows, cols, cwidth) {
         fill(this.color);
         rect(2, 2, this.cols * this.cwidth + 4, this.rows * this.cwidth + 4);
 
-        // for each shape
-        for(var k = 0; k < this.shapes.length; k++){
-
-            // for each block of the shape 
-            for (var l = 0; l < this.shapes[k].blocks.length; l++){
+        // for each block on the board
+        for(var k = 0; k < this.blocks.length; k++){
 
                 // grab data to print 
-                var i = this.shapes[k].blocks[l].i;
-                var j = this.shapes[k].blocks[l].j;
-                var color = this.shapes[k].blocks[l].color;
+                var i = this.blocks[k].i;
+                var j = this.blocks[k].j;
+                var color = this.blocks[k].color;
+                console.log(this.blocks.length);
 
                 stroke(0);
                 strokeWeight(3);
                 fill(color);
                 rect(j * this.cwidth + 5, i * this.cwidth + 5, cwidth - 2, cwidth - 2);
 
-
-            }
 
         }  
 
