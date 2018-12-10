@@ -13,6 +13,7 @@ function Grid(rows, cols, cwidth) {
     this.color = "#87ceeb";
     this.cells = [];
     this.blocks = [];
+    this.score = 0;
     this.currentShape;
     this.nextShape;
 
@@ -27,24 +28,89 @@ function Grid(rows, cols, cwidth) {
 
     }
 
-    // UPDATE/MOVE BLOCK 
+    // UPDATE 
     // ==================================================================================================
 
-    this.rotateShape = function(){
 
-        //ensure it can rotate 
-        if(this.canRotate()){
 
-            this.removeShape(); 
+    // the constant falling of the current falling block 
+    // returns true if successful, false otherwise 
+    this.update = function () {
 
-            this.currentShape.rotate();
+        var check = true;
 
-            this.addShape();
+        // attempt to move down, if cant 
+        if (!this.moveDown()){
+
+            // check whether there is a filled row or not
+            var rowFilled = this.filledRow();
+
+            // remove focus on current shape (since it shouldnt be falling anymore )
+            this.currentShape = null;
+
+            // if a row is filled 
+            if(rowFilled != -1){
+
+                this.removeRow(rowFilled);
+
+                this.score += 20;
+
+            } 
+
+            // else if a row is not filled
+            else { 
+                // create new shape
+                check = this.createShape();
+            }
+        }
+
+        if(!check) {
+            console.log("failed to update board");
 
         }
 
+        return check;
+
     }
 
+    // FILLED ROWS  
+    // ==================================================================================================
+
+
+    // returns the i of the filled row or -1 if none
+    this.filledRow = function(){
+
+        for(var i = 0; i < this.rows; i++){
+
+            var isRowFilled = true;
+
+            for(var j = 0; j < this.cols; j++){
+
+                // if there is an empty space, then the current row is not filled
+                if(this.cells[i][j] == 0){
+
+                    isRowFilled = false;
+                    break;
+
+                }
+
+
+            }
+
+            console.log(isRowFilled);
+            if(isRowFilled){
+
+                return i;
+
+            }
+
+        }
+
+        return -1;
+
+    }
+
+    
     this.removeRow = function(rowFilled){
 
         // change that row to zeros 
@@ -110,42 +176,15 @@ function Grid(rows, cols, cwidth) {
 
     }
 
-    // the constant falling of the current falling block 
-    // returns true if successful, false otherwise 
-    this.update = function () {
+    // DETERMING IF SHAPE CAN MOVE  
+    // ==================================================================================================
 
-        var check = true;
-
-        // attempt to move down, if cant 
-        if (!this.moveDown()){
-
-            // check whether there is a filled row or not
-            var rowFilled = this.filledRow();
-
-            // if a row is filled 
-            if(rowFilled != -1){
-
-                this.removeRow(rowFilled);
-
-            } 
-
-            // else if a row is not filled
-            else { 
-                // create new shape
-                check = this.createShape();
-            }
-        }
-
-        if(!check) {
-            console.log("failed to update board");
-
-        }
-
-        return check;
-
-    }
-
+    // returns if the current falling shape can rotate (if there is one)
     this.canRotate = function(){
+
+        if(this.currentShape == null){
+            return false;
+        }
 
         var posRot = this.currentShape.curRot.posRot;
 
@@ -165,7 +204,12 @@ function Grid(rows, cols, cwidth) {
 
     }
 
+    // returns if the current falling shape can move down (if there is one)
     this.canMoveDown = function(){
+
+        if(this.currentShape == null){
+            return false;
+        }
 
         var posUnder = this.currentShape.curRot.posUnder;
 
@@ -186,7 +230,13 @@ function Grid(rows, cols, cwidth) {
 
     }
 
+    
+    // returns if the current falling shape can move left (if there is one)
     this.canMoveLeft = function(){
+
+        if(this.currentShape == null){
+            return false;
+        }
 
         var posLeft = this.currentShape.curRot.posLeft;
 
@@ -207,7 +257,13 @@ function Grid(rows, cols, cwidth) {
 
     }
 
+    
+    // returns if the current falling shape can move right (if there is one)
     this.canMoveRight = function(){
+
+        if(this.currentShape == null){
+            return false;
+        }
 
         var posRight = this.currentShape.curRot.posRight;
 
@@ -226,6 +282,26 @@ function Grid(rows, cols, cwidth) {
 
         return true;
 
+
+    }
+
+
+    //  MOVE SHAPE  
+    // ==================================================================================================
+
+    
+    this.rotateShape = function(){
+
+        //ensure it can rotate 
+        if(this.canRotate()){
+
+            this.removeShape(); 
+
+            this.currentShape.rotate();
+
+            this.addShape();
+
+        }
 
     }
 
@@ -277,38 +353,6 @@ function Grid(rows, cols, cwidth) {
 
     }
 
-    // returns the i of the filled row or -1 if none
-    this.filledRow = function(){
-
-        for(var i = 0; i < this.rows; i++){
-
-            var isRowFilled = true;
-
-            for(var j = 0; j < this.cols; j++){
-
-                // if there is an empty space, then the current row is not filled
-                if(this.cells[i][j] == 0){
-
-                    isRowFilled = false;
-                    break;
-
-                }
-
-
-            }
-
-            console.log(isRowFilled);
-            if(isRowFilled){
-
-                return i;
-
-            }
-
-        }
-
-        return -1;
-
-    }
 
     // INSERTING BLOCK 
     // ==================================================================================================
@@ -318,9 +362,8 @@ function Grid(rows, cols, cwidth) {
 
         console.log("attempting to create new shape");
 
-        //var options = [ONE, FOURXONE, TWOXTWO, TWOZ, _TWOZ, HOOK_L, HOOK, TEE, U];
-        var options = [TEE];
-
+        var options = [ONE, FOURXONE, TWOXTWO, TWOZ, _TWOZ, HOOK_L, HOOK, TEE, U];
+        
         this.currentShape = new shape(options[floor(random(options.length))]);
 
         
