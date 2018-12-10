@@ -30,6 +30,21 @@ function Grid(rows, cols, cwidth) {
     // UPDATE/MOVE BLOCK 
     // ==================================================================================================
 
+    this.rotateShape = function(){
+
+        //ensure it can rotate 
+        if(this.canRotate()){
+
+            this.removeShape(); 
+
+            this.currentShape.rotate();
+
+            this.addShape();
+
+        }
+
+    }
+
     this.removeRow = function(rowFilled){
 
         // change that row to zeros 
@@ -130,9 +145,29 @@ function Grid(rows, cols, cwidth) {
 
     }
 
+    this.canRotate = function(){
+
+        var posRot = this.currentShape.curRot.posRot;
+
+        // ensure it can rotate 
+        for (var k = 0; k < posRot.length; k++){
+
+            // it cannot rotate if at least one space has an element or is the wall or ceiling 
+            if(posRot[k].i >= this.rows || posRot[k].i < 0 || this.cells[posRot[k].i][posRot[k].j] != 0){
+
+                return false;
+
+            }
+
+        }
+
+        return true;
+
+    }
+
     this.canMoveDown = function(){
 
-        var posUnder = this.currentShape.posUnder;
+        var posUnder = this.currentShape.curRot.posUnder;
 
         // ensure it can move down 
         for (var k = 0; k < posUnder.length; k++){
@@ -153,7 +188,7 @@ function Grid(rows, cols, cwidth) {
 
     this.canMoveLeft = function(){
 
-        var posLeft = this.currentShape.posLeft;
+        var posLeft = this.currentShape.curRot.posLeft;
 
         // ensure it can move left 
         for (var k = 0; k < posLeft.length; k++){
@@ -174,7 +209,7 @@ function Grid(rows, cols, cwidth) {
 
     this.canMoveRight = function(){
 
-        var posRight = this.currentShape.posRight;
+        var posRight = this.currentShape.curRot.posRight;
 
         // ensure it can move right 
         for (var k = 0; k < posRight.length; k++){
@@ -283,17 +318,12 @@ function Grid(rows, cols, cwidth) {
 
         console.log("attempting to create new shape");
 
-        var options = [ONE, FOURXONE, TWOXTWO, TWOZ, _TWOZ, HOOK_L, HOOK, TEE, U];
+        //var options = [ONE, FOURXONE, TWOXTWO, TWOZ, _TWOZ, HOOK_L, HOOK, TEE, U];
+        var options = [TEE];
 
         this.currentShape = new shape(options[floor(random(options.length))]);
 
-        // for each block in the shape
-        for(var k = 0; k < this.currentShape.blocks.length; k++){
-
-            this.blocks.push(this.currentShape.blocks[k]);
-            console.log(this.currentShape.blocks[k]);
-
-        }
+        
         var check = this.addShape();
         
         if (!check){
@@ -308,10 +338,23 @@ function Grid(rows, cols, cwidth) {
     this.removeShape = function(){
 
         // for each block in the current shape 
-        for (var k = 0; k < this.currentShape.blocks.length; k++){
+        for (var k = 0; k < this.currentShape.curRot.blocks.length; k++){
 
             // put a 1 at the block's position on the grid
-            this.cells[this.currentShape.blocks[k].i][this.currentShape.blocks[k].j] = 0;
+            this.cells[this.currentShape.curRot.blocks[k].i][this.currentShape.curRot.blocks[k].j] = 0;
+
+
+            // remove blocks 
+            for(var l = 0; l < this.blocks.length; l++){
+
+                if (this.blocks[l] == this.currentShape.curRot.blocks[k]){
+
+                    this.blocks.splice(l,1);
+
+                }
+
+            }
+
 
         }
 
@@ -321,14 +364,17 @@ function Grid(rows, cols, cwidth) {
     this.addShape = function(){
 
         // for each block in the current shape 
-        for (var k = 0; k < this.currentShape.blocks.length; k++){
+        for (var k = 0; k < this.currentShape.curRot.blocks.length; k++){
 
             // ensure the position to add doesnt already have something, then game is over 
-            if (this.cells[this.currentShape.blocks[k].i][this.currentShape.blocks[k].j] == 1)
+            if (this.cells[this.currentShape.curRot.blocks[k].i][this.currentShape.curRot.blocks[k].j] == 1)
                 return false;
 
             // put a 1 at the block's position on the grid
-            this.cells[this.currentShape.blocks[k].i][this.currentShape.blocks[k].j] = 1;
+            this.cells[this.currentShape.curRot.blocks[k].i][this.currentShape.curRot.blocks[k].j] = 1;
+
+            this.blocks.push(this.currentShape.curRot.blocks[k]);
+            console.log(this.currentShape.curRot.blocks[k]);
 
         }
 
@@ -355,7 +401,7 @@ function Grid(rows, cols, cwidth) {
             str += "\n";
 
         }
-        console.clear();
+        //console.clear();
         console.log(str);
     }
 

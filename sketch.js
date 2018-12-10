@@ -59,6 +59,14 @@ function keyPressed(){
         background('#679aca');
         board.show();
 
+    } else if(keyCode == UP_ARROW){
+
+        console.log("rotating");
+        board.rotateShape();
+        board.print();
+        background('#679aca');
+        board.show();
+
     }
 
 }
