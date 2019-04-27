@@ -24,6 +24,87 @@ var ONE = {
     ]
 };
 
+var ZAGNZIG = {
+    color: '#ff00ff',
+    rotation: [
+        {
+            blockLocations: [
+                { i: 1, j: 4 },
+                { i: 0, j: 5 }
+            ],
+            underLocations: [
+                { i: 2, j: 4 },
+                { i: 1, j: 5 }
+            ],
+            leftLocations: [
+                { i: 1, j: 3 },
+                { i: 0, j: 4 }
+            ],
+            rightLocations: [
+                { i: 1, j: 5 },
+                { i: 0, j: 6 }
+            ],
+            rotationLocations: [
+                { i: 1, j: 5 },
+                { i: 0, j: 4 }
+            ]
+        },
+        {
+            blockLocations: [
+                { i: 1, j: 5 },
+                { i: 0, j: 4 }
+            ],
+            underLocations: [
+                { i: 2, j: 5 },
+                { i: 1, j: 4 }
+            ],
+            leftLocations: [
+                { i: 1, j: 4 },
+                { i: 0, j: 3 }
+            ],
+            rightLocations: [
+                { i: 1, j: 6 },
+                { i: 0, j: 5 }
+            ],
+            rotationLocations: [
+                { i: 1, j: 4 },
+                { i: 0, j: 5 }
+            ]
+        }
+    ]
+};
+
+var WUBWUB = {
+    color: '#cccccc',
+    rotation: [
+        {
+            blockLocations: [
+                { i: 1, j: 4 },
+                { i: 0, j: 4 },
+                { i: 0, j: 5 },
+                { i: 1, j: 7 }
+            ],
+            underLocations: [
+                { i: 2, j: 4 },
+                { i: 1, j: 5 },
+                { i: 2, j: 7 }
+            ],
+            leftLocations: [
+                { i: 1, j: 3 },
+                { i: 0, j: 3 },
+                { i: 1, j: 6 }
+            ],
+            rightLocations: [
+                { i: 1, j: 5 },
+                { i: 0, j: 6 },
+                { i: 1, j: 8 }
+            ],
+            rotationLocations: [
+            ]
+        }
+    ]
+};
+
 var FOURXONE = {
     color: '#fc6566',
     rotation: [

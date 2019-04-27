@@ -53,7 +53,7 @@ function Grid(rows, cols, cwidth) {
 
                 this.removeRow(rowFilled);
 
-                this.score += 20;
+                this.score += 1;
 
             } 
 
@@ -363,7 +363,8 @@ function Grid(rows, cols, cwidth) {
         console.log("attempting to create new shape");
 
         var options = [ONE, FOURXONE, TWOXTWO, TWOZ, _TWOZ, HOOK_L, HOOK, TEE, U];
-        
+        //var options = [ZAGNZIG, WUBWUB];
+
         this.currentShape = new shape(options[floor(random(options.length))]);
 
         
